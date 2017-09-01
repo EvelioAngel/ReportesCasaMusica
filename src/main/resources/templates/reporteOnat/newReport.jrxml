@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd2c4309-a25a-4174-afb6-4fa8d74e215a">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<queryString>
+		<![CDATA[SELECT  
+  SUM(m1.precio) as Contrato,
+  m1.porciento_empresa,  
+  SUM(nomina_artista.salario_bruto) as Salario 
+FROM   
+  nomina_artista,  
+  m1,
+  nomina,
+  m2
+WHERE 
+  nomina_artista.id_nomina = nomina.id_nomina AND  
+  nomina.anno = 2017 AND 
+  nomina_artista.idm2 = m2.id_m2 AND
+  m2.id_m1 = m1.id_m1 AND
+  nomina_artista.idartista = 1202 
+GROUP BY
+  m1.porciento_empresa
+ORDER BY
+  porciento_empresa DESC]]>
+	</queryString>
+	<field name="contrato" class="java.math.BigDecimal"/>
+	<field name="porciento_empresa" class="java.math.BigDecimal"/>
+	<field name="salario" class="java.math.BigDecimal"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="28" width="100" height="20" uuid="2a6e07ef-3ebe-48f5-aae8-b7f70339750b"/>
+				<text><![CDATA[Valor del Contrato]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="114" y="28" width="48" height="20" uuid="5aa9605c-58d5-41da-9452-96b28af4a0dc"/>
+				<text><![CDATA[%]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="29" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="8f16133e-5ad1-4a43-8b4b-007aa92f24fb"/>
+				<textFieldExpression><![CDATA[$F{contrato}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="114" y="0" width="48" height="20" uuid="432ccdfb-cf33-4564-af76-54bba797f597"/>
+				<textFieldExpression><![CDATA[$F{porciento_empresa}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
