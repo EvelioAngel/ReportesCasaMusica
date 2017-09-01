@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <!--/*/ <th:block th:include="fragments/header :: head"></th:block> /*/-->
+    </head>
+    <body>
+        <!--/*/ <th:block th:replace="fragments/header :: header"></th:block> /*/-->
+
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-2 col-sm-offset-1">
+                    <div class="thumbnail">
+                        <img th:src="@{images/boot.png}" alt=""/>
+                        <div class="caption">
+                            <h3>Thumbnail label</h3>
+                            <p>prueba</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <div class="thumbnail">
+                        <img th:src="@{images/boot.png}" alt=""/>
+                        <div class="caption">
+                            <h3>Thumbnail label</h3>
+                            <p>...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
