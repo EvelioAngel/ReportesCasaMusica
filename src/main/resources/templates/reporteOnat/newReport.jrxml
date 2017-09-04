@@ -27,7 +27,7 @@ GROUP BY
      artista.segundo_apellido,
      artista.ci
 ORDER BY
-     m1.porciento_empresa DESC]]>
+     m1.porciento_empresa DESC;]]>
 	</queryString>
 	<field name="contrato" class="java.math.BigDecimal"/>
 	<field name="salario" class="java.math.BigDecimal"/>

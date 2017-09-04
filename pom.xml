@@ -77,6 +77,25 @@
             <version>3.2.1</version>
         </dependency>
         
+        <!-- dependencia para el paginado -->
+        <dependency>
+            <groupId>io.github.jpenren</groupId>
+            <artifactId>thymeleaf-spring-data-dialect</artifactId>   
+            <version>2.1.1</version>         
+        </dependency>
+        
+        <!-- para jasper report -->
+        <dependency>
+            <groupId>net.sf.jasperreports</groupId>
+            <artifactId>jasperreports</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.olap4j</groupId>
+                    <artifactId>olap4j</artifactId>                                          
+                </exclusion>
+            </exclusions>
+            <version>6.1.0</version>
+        </dependency>
     </dependencies>
 
     <build>

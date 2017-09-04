@@ -5,13 +5,34 @@
  */
 package org.reportes.controller;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
+import org.reportes.services.ArtistaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.SortDefault;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  *
@@ -22,21 +43,53 @@ public class ReporteOnatController {
 
     @Autowired
     private JdbcTemplate jdbctemplate;
+    
+    @Autowired
+    ArtistaService serviceArtista;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index() {
         return "index";
     }
-
+    
     @RequestMapping(value = "/onat", method = RequestMethod.GET)
-    public void ReporteOnat() {
-        String sql = "SELECT * "                                
-                + "FROM "               
-                + "nomina "
-                + "WHERE " 
-                + "id_nomina = 2"
-                +"ORDER BY "
-                +"nomina.fecha ASC;";
+    public String onat(Model model,@SortDefault("nombre") Pageable pageable) {
+        model.addAttribute("page", serviceArtista.list(pageable));
+        return "reporteOnat/index";
+    }
+    
+    @RequestMapping(value = "/onat/pdf", method = RequestMethod.GET)
+    public @ResponseBody void pdf(HttpServletResponse response) throws SQLException {
+        
+        try {
+            JasperReport report;
+            report = (JasperReport) JRLoader.loadObjectFromFile("src/main/resources/templates/reporteOnat/newReport.jasper");
+            
+            //fecha y hora actual para renombrar los pdf
+            Date date = new Date();
+            DateFormat hourdateFormat = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
+            String fechaActual = hourdateFormat.format(date);
+            
+            //alfinal se pasa la coneccion que se la estoy pidiendo al jdbctemplate
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, new HashMap<>(),jdbctemplate.getDataSource().getConnection());
+            response.setContentType("application/x-pdf");
+            response.setHeader("Content-Disposition", "inline; filename=Imprimir-Agentes-" + fechaActual + ".pdf");
+            
+            final OutputStream outputStream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+        
+        } catch (JRException ex) {
+            Logger.getLogger(ReporteOnatController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ReporteOnatController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    
+    @RequestMapping(value = "/onat/sql", method = RequestMethod.GET)
+    public void sql() {
+        String sql = "SELECT * FROM nomina WHERE id_nomina = 2 ORDER BY nomina.fecha ASC;";
+        
         List<Map<String, Object>> ls = jdbctemplate.queryForList(sql);
 
         ls.stream().forEach((row) -> {
