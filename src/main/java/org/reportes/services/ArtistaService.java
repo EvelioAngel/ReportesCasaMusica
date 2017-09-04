@@ -25,4 +25,8 @@ public class ArtistaService {
     public Page<Artista> list(Pageable pageable){
         return repo.findAll(pageable);
     } 
+    
+    public Page<Artista> search(String nombre, String ci, Pageable pageable){
+        return repo.findByNombreIgnoreCaseLikeAndCiLike(nombre, ci, pageable);
+    }
 }

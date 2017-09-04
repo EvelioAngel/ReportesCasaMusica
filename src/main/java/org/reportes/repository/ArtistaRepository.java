@@ -16,4 +16,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface ArtistaRepository extends CrudRepository<Artista, Integer>{
     Page<Artista> findAll(Pageable pageable);
+    
+    Page<Artista> findByNombreIgnoreCaseLikeAndCiLike(String nombre, String ci, Pageable pageable);
 }

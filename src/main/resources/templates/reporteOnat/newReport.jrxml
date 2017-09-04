@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd2c4309-a25a-4174-afb6-4fa8d74e215a">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="dd2c4309-a25a-4174-afb6-4fa8d74e215a">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="58"/>
+	<parameter name="idArtista" class="java.lang.Integer"/>
+	<parameter name="anno" class="java.lang.Integer"/>
 	<queryString>
 		<![CDATA[SELECT
      SUM(m1.precio) AS Contrato,
@@ -17,9 +19,9 @@ FROM
      INNER JOIN "m2" m2 ON nomina_artista."idm2" = m2."id_m2"
      INNER JOIN "m1" m1 ON m2."id_m1" = m1."id_m1"     
 WHERE
-     nomina.anno = 2017
- AND nomina_artista.idartista = 1202
- and artista.id_artista = 1202
+     nomina.anno = $P{anno}
+ AND nomina_artista.idartista = $P{idArtista}
+ and artista.id_artista = $P{idArtista}
 GROUP BY
      m1.porciento_empresa,
      artista.nombre,
@@ -36,13 +38,16 @@ ORDER BY
 	<field name="artista_primer_apellido" class="java.lang.String"/>
 	<field name="artista_segundo_apellido" class="java.lang.String"/>
 	<field name="artista_ci" class="java.lang.String"/>
+	<variable name="porciento" class="java.math.BigDecimal">
+		<variableExpression><![CDATA[($F{contrato}.multiply($F{porciento_empresa})).divide(new BigDecimal(100))]]></variableExpression>
+	</variable>
 	<background>
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="29" splitType="Stretch">
+		<band height="60" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="0" width="555" height="20" uuid="961d3fe7-3c77-4cb7-954a-7e5d3d031da3"/>
+				<reportElement x="0" y="22" width="555" height="20" uuid="961d3fe7-3c77-4cb7-954a-7e5d3d031da3"/>
 				<text><![CDATA[EMPRESA PROVINCIAL COMERCIALIZADORA DE LA MUSICA Y LOS ESPECTACULOS SINDO GARAY. GRANMA]]></text>
 			</staticText>
 		</band>
@@ -61,13 +66,13 @@ ORDER BY
 				<reportElement x="37" y="40" width="154" height="20" uuid="6c1552dd-7398-433b-90a8-2e547c95fe2a"/>
 				<text><![CDATA[Trabajador de nuestro centro CI:]]></text>
 			</staticText>
-			<textField>
+			<textField pattern="" isBlankWhenNull="true">
 				<reportElement x="68" y="20" width="439" height="20" uuid="42432c5c-7cfd-454c-98a4-ae635dafafbd"/>
 				<textFieldExpression><![CDATA[$F{artista_nombre}+" "+ 
 $F{artista_primer_apellido}+" "+ 
 $F{artista_segundo_apellido}]]></textFieldExpression>
 			</textField>
-			<textField>
+			<textField isBlankWhenNull="true">
 				<reportElement x="183" y="40" width="70" height="20" uuid="260330e4-1a44-49b6-b7fb-42d841cdcee0"/>
 				<textFieldExpression><![CDATA[$F{artista_ci}]]></textFieldExpression>
 			</textField>
@@ -96,16 +101,24 @@ $F{artista_segundo_apellido}]]></textFieldExpression>
 	<detail>
 		<band height="23" splitType="Stretch">
 			<textField>
-				<reportElement x="37" y="0" width="100" height="20" uuid="8f16133e-5ad1-4a43-8b4b-007aa92f24fb"/>
+				<reportElement x="16" y="0" width="100" height="20" uuid="8f16133e-5ad1-4a43-8b4b-007aa92f24fb"/>
+				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{contrato}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="162" y="0" width="48" height="20" uuid="432ccdfb-cf33-4564-af76-54bba797f597"/>
+				<reportElement x="162" y="0" width="29" height="20" uuid="432ccdfb-cf33-4564-af76-54bba797f597"/>
+				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{porciento_empresa}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="346" y="0" width="100" height="20" uuid="226727fa-1976-4d95-aa53-8f7da3f38a1f"/>
+				<reportElement x="388" y="0" width="100" height="20" uuid="226727fa-1976-4d95-aa53-8f7da3f38a1f"/>
+				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{salario}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="221" y="0" width="100" height="20" uuid="49e44088-5702-4cb4-a914-93871f4aac13"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$V{porciento}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
@@ -118,4 +131,15 @@ $F{artista_segundo_apellido}]]></textFieldExpression>
 	<summary>
 		<band height="42" splitType="Stretch"/>
 	</summary>
+	<noData>
+		<band height="50">
+			<staticText>
+				<reportElement x="168" y="0" width="314" height="20" uuid="b32a7f89-f9a9-4f22-ac18-532f784a0615"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[No hay Resultado para este Reporte]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>

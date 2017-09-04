@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,8 +31,10 @@ import org.springframework.data.web.SortDefault;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -53,13 +56,16 @@ public class ReporteOnatController {
     }
     
     @RequestMapping(value = "/onat", method = RequestMethod.GET)
-    public String onat(Model model,@SortDefault("nombre") Pageable pageable) {
-        model.addAttribute("page", serviceArtista.list(pageable));
+    public String onat(@RequestParam(required= false, defaultValue="") String nombre,
+                       @RequestParam(required= false, defaultValue="") String ci, 
+                       Model model,@SortDefault("nombre") Pageable pageable) {
+        
+        model.addAttribute("page", serviceArtista.search("%"+nombre+"%","%"+ci+"%",pageable));
         return "reporteOnat/index";
     }
     
-    @RequestMapping(value = "/onat/pdf", method = RequestMethod.GET)
-    public @ResponseBody void pdf(HttpServletResponse response) throws SQLException {
+    @RequestMapping(value = "/onat/pdf/{id}", method = RequestMethod.GET)
+    public @ResponseBody void pdf(@PathVariable Integer id, HttpServletResponse response) throws SQLException {
         
         try {
             JasperReport report;
@@ -71,7 +77,11 @@ public class ReporteOnatController {
             String fechaActual = hourdateFormat.format(date);
             
             //alfinal se pasa la coneccion que se la estoy pidiendo al jdbctemplate
-            JasperPrint jasperPrint = JasperFillManager.fillReport(report, new HashMap<>(),jdbctemplate.getDataSource().getConnection());
+            HashMap<String,Object> params = new HashMap<>();
+            params.put("idArtista", id);
+            //poner el año actual
+            params.put("anno", Calendar.getInstance().get(Calendar.YEAR));
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, params,jdbctemplate.getDataSource().getConnection());
             response.setContentType("application/x-pdf");
             response.setHeader("Content-Disposition", "inline; filename=Imprimir-Agentes-" + fechaActual + ".pdf");
             
