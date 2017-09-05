@@ -60,7 +60,7 @@ public class ReporteOnatController {
                        @RequestParam(required= false, defaultValue="") String ci, 
                        Model model,@SortDefault("nombre") Pageable pageable) {
         
-        model.addAttribute("page", serviceArtista.search("%"+nombre+"%","%"+ci+"%",pageable));
+        model.addAttribute("page", serviceArtista.search("%"+nombre+"%","%"+ci+"%",pageable));        
         return "reporteOnat/index";
     }
     
@@ -82,7 +82,7 @@ public class ReporteOnatController {
             //poner el año actual
             params.put("anno", Calendar.getInstance().get(Calendar.YEAR));
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, params,jdbctemplate.getDataSource().getConnection());
-            response.setContentType("application/x-pdf");
+            response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "inline; filename=Imprimir-Agentes-" + fechaActual + ".pdf");
             
             final OutputStream outputStream = response.getOutputStream();
