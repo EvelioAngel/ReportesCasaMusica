@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="72783378-7877-4fd5-9962-73f6b367cce3">
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="72783378-7877-4fd5-9962-73f6b367cce3">
 	<property name="ireport.zoom" value="1.0"/>
 	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
+	<parameter name="idArtista" class="java.lang.Integer"/>
+	<parameter name="fechaI" class="java.util.Date">
+		<parameterDescription><![CDATA[]]></parameterDescription>
+	</parameter>
+	<parameter name="fechaF" class="java.util.Date"/>
 	<queryString>
 		<![CDATA[SELECT     
      SUM(nomina_artista.salario_bruto) AS bruto,      
@@ -17,14 +22,14 @@ FROM
      JOIN "nomina_artista" nomina_artista ON nomina_artista."idartista" = artista."id_artista"
      JOIN "nomina" nomina ON nomina_artista."id_nomina" = nomina."id_nomina" 
 WHERE
-     nomina.anno = 2017 
- and artista.id_artista = 1202
+     nomina.fecha >= $P{fechaI} 
+ and nomina.fecha <= $P{fechaF}
+ and artista.id_artista = $P{idArtista}
 GROUP BY     
      artista.nombre,
      artista.primer_apellido,
      artista.segundo_apellido,
-     artista.ci
-]]>
+     artista.ci]]>
 	</queryString>
 	<field name="bruto" class="java.math.BigDecimal"/>
 	<field name="neto" class="java.math.BigDecimal"/>
@@ -37,19 +42,130 @@ GROUP BY
 		<band splitType="Stretch"/>
 	</background>
 	<title>
-		<band height="79" splitType="Stretch"/>
+		<band height="51" splitType="Stretch">
+			<staticText>
+				<reportElement x="133" y="0" width="353" height="20" uuid="57290867-c4e2-45e5-b072-fd5445db0f13"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Empresa Provincial Comerc. de la Música y Espect.]]></text>
+			</staticText>
+		</band>
 	</title>
 	<pageHeader>
-		<band height="35" splitType="Stretch"/>
+		<band height="130" splitType="Stretch">
+			<staticText>
+				<reportElement x="77" y="0" width="116" height="20" uuid="e10ab41d-c517-4264-a011-b79a0cf05aac"/>
+				<text><![CDATA[Bayamo_________ del]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="88" y="31" width="398" height="20" uuid="c05df7dc-6b28-4335-9023-238d0a738973"/>
+				<text><![CDATA[A: Oficina Municipal de la Administración Tributaria Municipio.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="88" y="59" width="127" height="20" uuid="aab183fe-8e85-40f9-8fe9-8983d8c8a2e7"/>
+				<text><![CDATA[En relación con el artista]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="88" y="74" width="36" height="20" uuid="600b3c5a-6a06-4c26-822e-88289ff772a9"/>
+				<text><![CDATA[Con Ci]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="88" y="89" width="83" height="20" uuid="d8907320-83a6-4f88-b464-5d219c828950"/>
+				<text><![CDATA[Y domicilio legal]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="88" y="105" width="105" height="20" uuid="ea21a2ed-71d7-418e-8267-ca51cb4abae3"/>
+				<text><![CDATA[En el periodo desde:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="201" y="59" width="271" height="20" uuid="468f55d3-6c47-4fb9-9f24-d2de3285b704"/>
+				<textFieldExpression><![CDATA[$F{nombre} + " " +
+$F{primer_apellido} + " " +
+$F{segundo_apellido}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="123" y="74" width="95" height="20" uuid="ac526641-197d-4f17-8750-a4cc47e58834"/>
+				<textFieldExpression><![CDATA[$F{ci}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="183" y="105" width="54" height="20" uuid="b6148433-b3fe-48a7-a0db-60113501ee2a"/>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($P{fechaI})]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="276" y="105" width="100" height="20" uuid="a343b49c-5453-4f22-81c7-5288b574669f"/>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($P{fechaF})]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="242" y="105" width="30" height="20" uuid="62205151-33c6-416b-bb73-9ed0715ff86a"/>
+				<text><![CDATA[hasta:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="184" y="0" width="49" height="20" uuid="3f7e416e-7807-46fb-ac49-e3c7e19c9602"/>
+				<textFieldExpression><![CDATA[(new SimpleDateFormat("yyyy")).format(new Date())]]></textFieldExpression>
+			</textField>
+		</band>
 	</pageHeader>
 	<columnHeader>
-		<band height="61" splitType="Stretch"/>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement x="77" y="14" width="100" height="20" uuid="72e68b00-81ab-4813-8a59-a6203fb9b56b"/>
+				<text><![CDATA[INGRESOS BRUTOS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="210" y="14" width="136" height="20" uuid="d4c71ba7-2c0d-4453-91c2-f4e6956ec8e6"/>
+				<text><![CDATA[CERTIFICO RETENCIONES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="375" y="14" width="100" height="20" uuid="c1922bf0-a709-43a5-888f-e91e6d3d7e83"/>
+				<text><![CDATA[INGRESOS NETOS]]></text>
+			</staticText>
+		</band>
 	</columnHeader>
 	<detail>
-		<band height="125" splitType="Stretch"/>
+		<band height="21" splitType="Stretch">
+			<textField>
+				<reportElement x="73" y="0" width="100" height="20" uuid="287e221e-c63f-4d77-b3f6-d59839a31350"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{bruto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="237" y="0" width="100" height="20" uuid="2175f58b-f0c6-4763-b821-8697690acdb5"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{retencion}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="365" y="0" width="100" height="20" uuid="2ca0814d-981b-4d8d-b2cd-5d091cf2a0ef"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{neto}]]></textFieldExpression>
+			</textField>
+		</band>
 	</detail>
 	<columnFooter>
-		<band height="45" splitType="Stretch"/>
+		<band height="56" splitType="Stretch">
+			<staticText>
+				<reportElement x="77" y="1" width="100" height="20" uuid="75e37db6-990a-4f52-92d1-06ae613daf4b"/>
+				<text><![CDATA[__________________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="55" y="21" width="155" height="20" uuid="1a840f1e-8197-4f97-8077-e13c009bc2c1"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Técnico en Gestión Económica]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="375" y="21" width="111" height="20" uuid="d8e77d2f-87a8-477d-acb1-3599adb3b6e5"/>
+				<textElement>
+					<font isBold="true"/>
+				</textElement>
+				<text><![CDATA[Director del EPCME]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="375" y="1" width="100" height="20" uuid="9e7151d4-47cb-4bbb-b096-3c19905724fa"/>
+				<text><![CDATA[__________________]]></text>
+			</staticText>
+		</band>
 	</columnFooter>
 	<pageFooter>
 		<band height="54" splitType="Stretch"/>
@@ -57,4 +173,15 @@ GROUP BY
 	<summary>
 		<band height="42" splitType="Stretch"/>
 	</summary>
+	<noData>
+		<band height="50">
+			<staticText>
+				<reportElement x="178" y="10" width="314" height="20" uuid="a2db0f0a-305b-4502-a870-71b88324ece8"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[No hay Resultado para este Reporte]]></text>
+			</staticText>
+		</band>
+	</noData>
 </jasperReport>

@@ -5,13 +5,30 @@
  */
 package org.reportes.controller;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
+import javax.sql.DataSource;
 import javax.websocket.server.PathParam;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.util.JRLoader;
 import org.reportes.services.ArtistaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,6 +46,9 @@ public class ReporteIngresosController {
     @Autowired
     ArtistaService serviceArtista;
     
+    @Autowired
+    DataSource datasource;
+    
     @RequestMapping(value = "/ingresos", method = RequestMethod.GET)
     public String onat(@RequestParam(required= false, defaultValue="") String nombre,
                        @RequestParam(required= false, defaultValue="") String ci, 
@@ -40,11 +60,35 @@ public class ReporteIngresosController {
     
     @RequestMapping(value = "/ingresos/pdf/{id}", method = RequestMethod.GET)
     public @ResponseBody void pdf(@PathVariable Integer id, 
-                                  @RequestParam(value="fechaI", required=true) String fechaI,
-                                  @RequestParam(value="fechaF", required=true) String fechaF,
+                                  @RequestParam(value="fechaI", required=true)@DateTimeFormat(pattern = "dd/MM/yyyy") Date fechaI,
+                                  @RequestParam(value="fechaF", required=true)@DateTimeFormat(pattern = "dd/MM/yyyy") Date fechaF,
                                   HttpServletResponse response) throws SQLException {
-        System.out.println(id);
-        System.out.println(fechaI);
-        System.out.println(fechaF);
+                      
+        
+        try {
+            JasperReport report;
+            report = (JasperReport) JRLoader.loadObjectFromFile("src/main/resources/templates/reporteIngresos/ingresos.jasper");
+            
+            Date date = new Date();
+            DateFormat hourdateFormat = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
+            String fechaActual = hourdateFormat.format(date);
+            
+            HashMap<String,Object> params = new HashMap<>();
+            params.put("idArtista", id);
+            params.put("fechaI", fechaI);
+            params.put("fechaF", fechaF);
+            
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, params,datasource.getConnection());
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "inline; filename=Imprimir-Ingresos-" + fechaActual + ".pdf");
+            
+            final OutputStream outputStream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+                    
+        } catch (JRException ex) {
+            Logger.getLogger(ReporteIngresosController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ReporteIngresosController.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 }

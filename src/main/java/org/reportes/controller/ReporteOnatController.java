@@ -64,8 +64,10 @@ public class ReporteOnatController {
         return "reporteOnat/index";
     }
     
-    @RequestMapping(value = "/onat/pdf/{id}", method = RequestMethod.GET)
-    public @ResponseBody void pdf(@PathVariable Integer id, HttpServletResponse response) throws SQLException {
+    @RequestMapping(value = "/onat/pdf/{id}/{anno}", method = RequestMethod.GET)
+    public @ResponseBody void pdf(@PathVariable Integer id, 
+                                  @PathVariable Integer anno,
+                                  HttpServletResponse response) throws SQLException {
         
         try {
             JasperReport report;
@@ -80,10 +82,10 @@ public class ReporteOnatController {
             HashMap<String,Object> params = new HashMap<>();
             params.put("idArtista", id);
             //poner el año actual
-            params.put("anno", Calendar.getInstance().get(Calendar.YEAR));
+            params.put("anno", anno);
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, params,jdbctemplate.getDataSource().getConnection());
             response.setContentType("application/pdf");
-            response.setHeader("Content-Disposition", "inline; filename=Imprimir-Agentes-" + fechaActual + ".pdf");
+            response.setHeader("Content-Disposition", "inline; filename=Imprimir-Ingresos-" + fechaActual + ".pdf");
             
             final OutputStream outputStream = response.getOutputStream();
             JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);

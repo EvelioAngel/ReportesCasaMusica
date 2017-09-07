@@ -32,6 +32,15 @@ and open the template in the editor.
             <div class="row">
                 <a th:href="@{/}">atras...</a>
                 <div class="col-md-12">
+                    <form th:action="@{/ingresos}" method="get">
+                        <div class="form-inline">                             
+                            <select type="text" id="anno" class="form-control" >
+                                
+                            </select>                                                  
+                        </div>
+                    </form>
+                </div> 
+                <div class="col-md-12">
                     <div class="panel panel-primary">
                         <div class="panel-heading">
                             <h3 class="panel-title">Artistas</h3>
@@ -70,7 +79,7 @@ and open the template in the editor.
                                     <td th:text="${row.primerApellido}">primer apellido</td>
                                     <td th:text="${row.segundoApellido}">segundo apellido</td>
                                     <td th:text="${row.ci}">ci</td>
-                                    <td><a th:href="${'/onat/pdf/'+row.idArtista}" target="_blank"><span class="glyphicon glyphicon-print" aria-hidden="true"></span></a></td>
+                                    <td><a th:href="${'/onat/pdf/'+row.idArtista}+'/'" class="action-report" target="_blank"><span class="glyphicon glyphicon-print" aria-hidden="true"></span></a></td>
                                 </tr>
                             </tbody>
                         </table>
@@ -98,6 +107,19 @@ and open the template in the editor.
 
        
         <script>
+            $(function(){
+                anno = new Date().getFullYear();
+                $("#anno").append("<option value='"+anno+"'>"+anno+"</option>");
+                $("#anno").append($("<option/>").text(anno-1).val(anno-1));
+                $("#anno").append($("<option/>").text(anno-2).val(anno-2));               
+                $("#anno").append($("<option/>").text(anno-3).val(anno-3));
+                
+                $(".action-report").on("click",function(e){
+                    e.preventDefault();
+                    window.open($(this).attr("href")+$("#anno").val());                   
+                });
+            });
+            
             (function () {
                 'use strict';
                 var $ = jQuery;

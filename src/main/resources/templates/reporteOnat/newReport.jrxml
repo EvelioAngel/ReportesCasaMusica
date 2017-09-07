@@ -81,7 +81,7 @@ $F{artista_segundo_apellido}]]></textFieldExpression>
 				<text><![CDATA[sobre el año fiscal ]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="346" y="40" width="100" height="20" uuid="a272cdcd-a36c-4276-abca-b7dfe326ccf5"/>
+				<reportElement x="338" y="40" width="59" height="20" uuid="a272cdcd-a36c-4276-abca-b7dfe326ccf5"/>
 				<textFieldExpression><![CDATA[$P{anno}]]></textFieldExpression>
 			</textField>
 		</band>

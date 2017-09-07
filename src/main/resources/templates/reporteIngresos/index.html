@@ -5,8 +5,9 @@ To change this template file, choose Tools | Templates
 and open the template in the editor.
 -->
 <html>
-    <head>
-        <style>            
+    <head>        
+        <title>TODO supply a title</title>
+        <style>
             .clickable{
                 cursor: pointer;   
             }
@@ -22,9 +23,8 @@ and open the template in the editor.
                 display: none;
             } 
         </style>
-
-        <title>TODO supply a title</title>
         <!--/*/ <th:block th:include="fragments/header :: head"></th:block> /*/-->
+        <link href="ingresos.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
         <!--/*/ <th:block th:replace="fragments/header :: header"></th:block> /*/-->
@@ -33,9 +33,10 @@ and open the template in the editor.
                 <a th:href="@{/}">atras...</a>
                 <div class="col-md-12">
                     <form th:action="@{/ingresos}" method="get">
-                        <div class="form-inline">                            
-                            <input type="text" id="from" class="form-control" placeholder="Fecha inicial"/>
-                            <input type="text" id="to" class="form-control" placeholder="Fecha final"/>                        
+                        <div class="form-inline"> 
+                            <div class="alert alert-danger" hidden="true">Error en rango de fechas.</div>
+                            <input type="text" id="from" class="form-control" placeholder="Fecha inicial" />
+                            <input type="text" id="to" class="form-control" placeholder="Fecha final" />                        
                         </div>
                     </form>
                 </div>    
@@ -109,37 +110,40 @@ and open the template in the editor.
         <script>
 
             $(function () {
-                var dateFormat = "mm/dd/yy",
-                    from = $("#from").datepicker({
-                        defaultDate: "+1w",
-                        changeMonth: true,                        
-                    })
-                        .on("change", function () {
-                            to.datepicker("option", "minDate", getDate(this));
-                        }),
-                        
-                    to = $("#to").datepicker({
-                        defaultDate: "+1w",
-                        changeMonth: true,                        
-                    })
-                        .on("change", function () {
-                            from.datepicker("option", "maxDate", getDate(this));
-                        });
 
-                function getDate(element) {
-                    var date;
-                    try {
-                        date = $.datepicker.parseDate(dateFormat, element.value);
-                    } catch (error) {
-                        date = null;
+                $("#from").datepicker({
+                    defaultDate: "+1w",
+                    changeMonth: true,
+                    dateFormat: 'dd/mm/yy',
+                    onClose: function (selectedDate) {
+                        $("#to").datepicker("option", "minDate", selectedDate);
+                    }
+                });
+
+                $("#to").datepicker({
+                    defaultDate: "+1w",
+                    changeMonth: true,
+                    dateFormat: 'dd/mm/yy',
+                    onClose: function (selectedDate) {
+                        $("#from").datepicker("option", "maxDate", selectedDate);
                     }
 
-                    return date;
-                }
+                });
+                $("#from").datepicker("setDate", new Date());
+                $("#to").datepicker("setDate", new Date());
+
 
                 $(".action-report").on("click", function (e) {
                     e.preventDefault();
-                    window.location = $(this).attr("href") + "?fechaI=" + $("#from").val() + "&fechaF=" + $("#to").val();
+
+                    if ($("#from").val() !== "" && $("#from").val() !== "") {
+                        window.open($(this).attr("href") + "?fechaI=" + $("#from").val() + "&fechaF=" + $("#to").val(), target = "_blank");
+                        $(".alert").hide();
+                    } else {
+                        $(".alert").show();
+                    }
+                    //window.location = $(this).attr("href") + "?fechaI=" + $("#from").val() + "&fechaF=" + $("#to").val();
+
                 });
 
 
