@@ -26,6 +26,8 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.reportes.services.ArtistaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -71,7 +73,9 @@ public class ReporteOnatController {
         
         try {
             JasperReport report;
-            report = (JasperReport) JRLoader.loadObjectFromFile("src/main/resources/templates/reporteOnat/newReport.jasper");
+            Resource resource = new ClassPathResource("templates/reporteOnat/newReport.jasper");
+            //report = (JasperReport) JRLoader.loadObjectFromFile("templates/reporteOnat/newReport.jasper");
+            report = (JasperReport) JRLoader.loadObject(resource.getInputStream());
             
             //fecha y hora actual para renombrar los pdf
             Date date = new Date();

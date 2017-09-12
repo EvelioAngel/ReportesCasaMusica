@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -17,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
-import javax.websocket.server.PathParam;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperExportManager;
 import net.sf.jasperreports.engine.JasperFillManager;
@@ -26,6 +24,9 @@ import net.sf.jasperreports.engine.JasperReport;
 import net.sf.jasperreports.engine.util.JRLoader;
 import org.reportes.services.ArtistaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.SortDefault;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -45,7 +46,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class ReporteIngresosController {
     @Autowired
     ArtistaService serviceArtista;
-    
+            
     @Autowired
     DataSource datasource;
     
@@ -67,7 +68,8 @@ public class ReporteIngresosController {
         
         try {
             JasperReport report;
-            report = (JasperReport) JRLoader.loadObjectFromFile("src/main/resources/templates/reporteIngresos/ingresos.jasper");
+            Resource resource = new ClassPathResource("templates/reporteIngresos/ingresos.jasper");
+            report = (JasperReport) JRLoader.loadObject(resource.getInputStream());
             
             Date date = new Date();
             DateFormat hourdateFormat = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
