@@ -1,54 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="dd2c4309-a25a-4174-afb6-4fa8d74e215a">
 	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="64"/>
+	<property name="ireport.x" value="130"/>
+	<property name="ireport.y" value="0"/>
 	<parameter name="idArtista" class="java.lang.Integer"/>
-	<parameter name="anno" class="java.lang.Integer"/>
+	<parameter name="anno" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
 	<queryString>
 		<![CDATA[SELECT
-     SUM(m1.precio) AS Contrato,
-     SUM(nomina_artista.salario_bruto) AS Salario,
-     m1."porciento_empresa",
-     artista."nombre" AS artista_nombre,
-     artista."primer_apellido" AS artista_primer_apellido,
-     artista."segundo_apellido" AS artista_segundo_apellido,
-     artista."ci" AS artista_ci
+     m1.precio,
+     nomina_artista.salario_bruto,
+     m1.porciento_empresa,
+     artista.nombre AS artista_nombre,
+     artista.primer_apellido AS artista_primer_apellido,
+     artista.segundo_apellido AS artista_segundo_apellido,
+     artista.ci AS artista_ci,
+     programacion.lugar,
+     programacion.fecha
 FROM
-     "artista" artista, "nomina_artista" nomina_artista INNER JOIN "nomina" nomina ON nomina_artista."id_nomina" = nomina."id_nomina"
+     "artista" artista, "nomina_artista" nomina_artista 
+     INNER JOIN "nomina" nomina ON nomina_artista."id_nomina" = nomina."id_nomina"
      INNER JOIN "m2" m2 ON nomina_artista."idm2" = m2."id_m2"
-     INNER JOIN "m1" m1 ON m2."id_m1" = m1."id_m1"     
+     INNER JOIN "m1" m1 ON m2."id_m1" = m1."id_m1"  
+     INNER JOIN programacion ON programacion.id_programacion = m1.programacion   
 WHERE
      nomina.anno = $P{anno}
  AND nomina_artista.idartista = $P{idArtista}
  and artista.id_artista = $P{idArtista}
-GROUP BY
-     m1.porciento_empresa,
-     artista.nombre,
-     artista.primer_apellido,
-     artista.segundo_apellido,
-     artista.ci
 ORDER BY
      m1.porciento_empresa DESC;]]>
 	</queryString>
-	<field name="contrato" class="java.math.BigDecimal"/>
-	<field name="salario" class="java.math.BigDecimal"/>
+	<field name="precio" class="java.math.BigDecimal"/>
+	<field name="salario_bruto" class="java.math.BigDecimal"/>
 	<field name="porciento_empresa" class="java.math.BigDecimal"/>
 	<field name="artista_nombre" class="java.lang.String"/>
 	<field name="artista_primer_apellido" class="java.lang.String"/>
 	<field name="artista_segundo_apellido" class="java.lang.String"/>
 	<field name="artista_ci" class="java.lang.String"/>
+	<field name="lugar" class="java.lang.String"/>
+	<field name="fecha" class="java.sql.Date"/>
 	<variable name="porciento" class="java.math.BigDecimal">
-		<variableExpression><![CDATA[($F{contrato}.multiply($F{porciento_empresa})).divide(new BigDecimal(100))]]></variableExpression>
+		<variableExpression><![CDATA[($F{precio}.multiply($F{porciento_empresa})).divide(new BigDecimal(100))]]></variableExpression>
 	</variable>
 	<variable name="sumaContrato" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{contrato}]]></variableExpression>
+		<variableExpression><![CDATA[$F{precio}]]></variableExpression>
 	</variable>
 	<variable name="sumaAporteEmp" class="java.math.BigDecimal" calculation="Sum">
 		<variableExpression><![CDATA[$V{porciento}]]></variableExpression>
 	</variable>
 	<variable name="sumaIngresos" class="java.math.BigDecimal" calculation="Sum">
-		<variableExpression><![CDATA[$F{salario}]]></variableExpression>
+		<variableExpression><![CDATA[$F{salario_bruto}]]></variableExpression>
 	</variable>
 	<background>
 		<band splitType="Stretch"/>
@@ -101,69 +103,85 @@ $F{artista_segundo_apellido}]]></textFieldExpression>
 	<columnHeader>
 		<band height="61" splitType="Stretch">
 			<staticText>
-				<reportElement x="37" y="28" width="100" height="20" uuid="2a6e07ef-3ebe-48f5-aae8-b7f70339750b"/>
+				<reportElement x="169" y="28" width="90" height="20" uuid="2a6e07ef-3ebe-48f5-aae8-b7f70339750b"/>
 				<text><![CDATA[Valor del Contrato]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="162" y="28" width="48" height="20" uuid="5aa9605c-58d5-41da-9452-96b28af4a0dc"/>
+				<reportElement x="279" y="28" width="13" height="20" uuid="5aa9605c-58d5-41da-9452-96b28af4a0dc"/>
 				<text><![CDATA[%]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="346" y="28" width="161" height="20" uuid="3ce29f06-8739-4c47-b0f5-96fb81586dc3"/>
+				<reportElement x="396" y="28" width="159" height="20" uuid="3ce29f06-8739-4c47-b0f5-96fb81586dc3"/>
 				<text><![CDATA[Ingresos Obtenidos por el Artista]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="230" y="28" width="100" height="20" uuid="40201ed9-aace-4c59-8b36-fcd940d9490b"/>
+				<reportElement x="296" y="28" width="100" height="20" uuid="40201ed9-aace-4c59-8b36-fcd940d9490b"/>
 				<text><![CDATA[Aporte a la Empresa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="28" width="100" height="20" uuid="425cf533-2cfe-4a6d-ba94-d688295ab0dc"/>
+				<text><![CDATA[Lugar]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="100" y="28" width="68" height="20" uuid="0a130b8a-f900-4251-929b-428e9b3af1c8"/>
+				<text><![CDATA[Fecha]]></text>
 			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
 		<band height="22" splitType="Stretch">
 			<textField>
-				<reportElement x="16" y="0" width="100" height="20" uuid="8f16133e-5ad1-4a43-8b4b-007aa92f24fb"/>
+				<reportElement x="160" y="0" width="90" height="20" uuid="8f16133e-5ad1-4a43-8b4b-007aa92f24fb"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{contrato}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{precio}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="162" y="0" width="29" height="20" uuid="432ccdfb-cf33-4564-af76-54bba797f597"/>
+				<reportElement x="263" y="0" width="29" height="20" uuid="432ccdfb-cf33-4564-af76-54bba797f597"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$F{porciento_empresa}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="388" y="0" width="100" height="20" uuid="226727fa-1976-4d95-aa53-8f7da3f38a1f"/>
+				<reportElement x="442" y="0" width="100" height="20" uuid="226727fa-1976-4d95-aa53-8f7da3f38a1f"/>
 				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA[$F{salario}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{salario_bruto}]]></textFieldExpression>
 			</textField>
 			<textField pattern="###0.00">
-				<reportElement x="221" y="0" width="100" height="20" uuid="49e44088-5702-4cb4-a914-93871f4aac13"/>
+				<reportElement x="286" y="0" width="100" height="20" uuid="49e44088-5702-4cb4-a914-93871f4aac13"/>
 				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[$V{porciento}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="100" height="20" uuid="c4c3f12f-d597-4d1e-88f7-eaa4c9a91228"/>
+				<textFieldExpression><![CDATA[$F{lugar}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="100" y="0" width="68" height="20" uuid="f44ba8bd-ca70-42ed-9b3c-9bd29693df66"/>
+				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<columnFooter>
 		<band height="35" splitType="Stretch">
 			<textField>
-				<reportElement x="16" y="0" width="100" height="20" uuid="06549277-bdb6-412f-b75b-cf9c63621627"/>
+				<reportElement x="160" y="0" width="90" height="20" uuid="06549277-bdb6-412f-b75b-cf9c63621627"/>
 				<textElement textAlignment="Right">
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{sumaContrato}]]></textFieldExpression>
 			</textField>
-			<textField pattern="###0.00">
-				<reportElement x="221" y="0" width="100" height="20" uuid="72bb1e1e-e8c4-4aa8-91ce-f98d49aa73e0"/>
-				<textElement textAlignment="Right">
-					<font isBold="true"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$V{sumaAporteEmp}]]></textFieldExpression>
-			</textField>
 			<textField>
-				<reportElement x="388" y="0" width="100" height="20" uuid="4e4d76c2-0cfa-4b10-b767-e5add5f24b99"/>
+				<reportElement x="442" y="0" width="100" height="20" uuid="4e4d76c2-0cfa-4b10-b767-e5add5f24b99"/>
 				<textElement textAlignment="Right">
 					<font isBold="true"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$V{sumaIngresos}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00">
+				<reportElement x="296" y="0" width="100" height="20" uuid="72bb1e1e-e8c4-4aa8-91ce-f98d49aa73e0"/>
+				<textElement textAlignment="Right">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{sumaAporteEmp}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnFooter>

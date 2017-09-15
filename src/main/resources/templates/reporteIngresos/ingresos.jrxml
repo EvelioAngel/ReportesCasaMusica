@@ -12,7 +12,7 @@
 		<![CDATA[SELECT     
      SUM(nomina_artista.salario_bruto) AS bruto,      
      SUM(nomina_artista.saldo_neto) AS neto, 
-     SUM(nomina_artista.retencion) AS retencion,	
+     SUM(nomina_artista.onat) AS retencion,	
      artista."nombre" AS nombre,
      artista."primer_apellido" AS primer_apellido,
      artista."segundo_apellido" AS segundo_apellido,

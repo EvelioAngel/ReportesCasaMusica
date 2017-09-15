@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -90,6 +89,38 @@ public class ReporteOnatController {
             JasperPrint jasperPrint = JasperFillManager.fillReport(report, params,jdbctemplate.getDataSource().getConnection());
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "inline; filename=Imprimir-Ingresos-" + fechaActual + ".pdf");
+            
+            final OutputStream outputStream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
+        
+        } catch (JRException ex) {
+            Logger.getLogger(ReporteOnatController.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(ReporteOnatController.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
+    
+    @RequestMapping(value = "/onat/pdfdetail/{id}/{anno}", method = RequestMethod.GET)
+    public @ResponseBody void pdfDetail(@PathVariable Integer id, 
+                                  @PathVariable Integer anno,
+                                  HttpServletResponse response) throws SQLException {
+        
+        try {
+            JasperReport report;
+            Resource resource = new ClassPathResource("templates/reporteOnat/detalle.jasper");            
+            report = (JasperReport) JRLoader.loadObject(resource.getInputStream());
+                        
+            Date date = new Date();
+            DateFormat hourdateFormat = new SimpleDateFormat("dd-MM-yyyy-HH-mm-ss");
+            String fechaActual = hourdateFormat.format(date);            
+            
+            HashMap<String,Object> params = new HashMap<>();
+            params.put("idArtista", id);            
+            params.put("anno", anno);
+            JasperPrint jasperPrint = JasperFillManager.fillReport(report, params,jdbctemplate.getDataSource().getConnection());
+            response.setContentType("application/pdf");
+            response.setHeader("Content-Disposition", "inline; filename=Imprimir-IngresosDetail-" + fechaActual + ".pdf");
             
             final OutputStream outputStream = response.getOutputStream();
             JasperExportManager.exportReportToPdfStream(jasperPrint, outputStream);
