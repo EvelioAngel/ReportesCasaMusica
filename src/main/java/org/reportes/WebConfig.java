@@ -9,8 +9,8 @@ import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 
-
 import org.thymeleaf.dialect.springdata.SpringDataDialect;
+import org.thymeleaf.extras.springsecurity4.dialect.SpringSecurityDialect;
 
 /**
  * Created by tiansha on 2015/11/3.
@@ -26,10 +26,16 @@ public class WebConfig extends WebMvcConfigurerAdapter {
         resolver.setFallbackPageable(new PageRequest(0, 20));
         argumentResolvers.add(resolver);
         super.addArgumentResolvers(argumentResolvers);
-    }    
+    }
 
     @Bean
     public SpringDataDialect springDataDialect() {
         return new SpringDataDialect();
     }
+
+    @Bean
+    public SpringSecurityDialect securityDialect() {
+        return new SpringSecurityDialect();
+    }    
+
 }

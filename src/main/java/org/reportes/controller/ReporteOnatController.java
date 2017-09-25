@@ -56,6 +56,11 @@ public class ReporteOnatController {
         return "index";
     }
     
+    @RequestMapping(value = "/login", method = RequestMethod.GET)
+    public String login() {
+        return "login";
+    }
+    
     @RequestMapping(value = "/onat", method = RequestMethod.GET)
     public String onat(@RequestParam(required= false, defaultValue="") String nombre,
                        @RequestParam(required= false, defaultValue="") String ci, 

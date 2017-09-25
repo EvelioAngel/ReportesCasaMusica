@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="dd2c4309-a25a-4174-afb6-4fa8d74e215a">
 	<property name="ireport.zoom" value="1.0"/>
-	<property name="ireport.x" value="130"/>
+	<property name="ireport.x" value="0"/>
 	<property name="ireport.y" value="0"/>
 	<parameter name="idArtista" class="java.lang.Integer"/>
 	<parameter name="anno" class="java.lang.Integer">
@@ -29,7 +29,7 @@ WHERE
  AND nomina_artista.idartista = $P{idArtista}
  and artista.id_artista = $P{idArtista}
 ORDER BY
-     m1.porciento_empresa DESC;]]>
+     programacion.fecha;]]>
 	</queryString>
 	<field name="precio" class="java.math.BigDecimal"/>
 	<field name="salario_bruto" class="java.math.BigDecimal"/>
@@ -156,7 +156,7 @@ $F{artista_segundo_apellido}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="100" y="0" width="68" height="20" uuid="f44ba8bd-ca70-42ed-9b3c-9bd29693df66"/>
-				<textFieldExpression><![CDATA[$F{fecha}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[new SimpleDateFormat("dd/MM/yyyy").format($F{fecha})]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>

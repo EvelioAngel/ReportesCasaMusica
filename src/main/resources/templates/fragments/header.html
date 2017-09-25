@@ -14,11 +14,15 @@ and open the template in the editor.
         <script th:src="@{/webjars/jquery-ui/1.12.1/jquery-ui.min.js}"></script>
     </head>
     <body>
-        
+
         <div class="navbar navbar-inverse" th:fragment="header">
             <img th:src="@{images/logo2.png}" alt="" style="height: 100px; width: 140px"/>
+
+            <div class="pull-right" sec:authorize="isAuthenticated()">
+                <a href="/logout" >Logout</a>
+            </div>
         </div>
-          
+
 
     </body>
 </html>
