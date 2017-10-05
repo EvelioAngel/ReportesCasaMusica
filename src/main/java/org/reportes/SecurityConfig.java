@@ -41,20 +41,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         + "and seguridad.usuario_rol.id_rol = seguridad.rol.id_rol "
                         + "and seguridad.usuario.usuario = ?");
     }
-
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-            .authorizeRequests()
+                .authorizeRequests()
                 .antMatchers("/", "/webjars/**").permitAll()
                 .anyRequest().authenticated()
                 .and()
-            .formLogin()
+                .formLogin()
                 .loginPage("/login")
                 .permitAll()
                 .and()
-            .logout()
-                .permitAll();
+                .logout()
+                .permitAll()
+                .and()
+                .rememberMe();       
+
     }
 
 }

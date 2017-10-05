@@ -15,7 +15,7 @@ and open the template in the editor.
     </head>
     <body>
 
-        <div class="navbar navbar-inverse" th:fragment="header">
+        <div class="navbar navbar-inverse" th:fragment="header" style="border-radius: 0px">
             <img th:src="@{images/logo2.png}" alt="" style="height: 100px; width: 140px"/>
 
             <div class="pull-right" sec:authorize="isAuthenticated()">

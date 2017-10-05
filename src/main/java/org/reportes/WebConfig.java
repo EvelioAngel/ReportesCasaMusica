@@ -37,5 +37,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
     public SpringSecurityDialect securityDialect() {
         return new SpringSecurityDialect();
     }    
+    
+    /*@Autowired
+    MyFilter logInterceptor;
+
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+            registry.addInterceptor(logInterceptor).addPathPatterns("/login");
+    }*/
 
 }
