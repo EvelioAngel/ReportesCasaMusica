@@ -20,7 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Component
 public class MyFilter implements HandlerInterceptor{  
         
- 
+  
     @Override
     public boolean preHandle(HttpServletRequest request, 
                    HttpServletResponse response, Object object) throws Exception {
@@ -48,8 +48,7 @@ public class MyFilter implements HandlerInterceptor{
     }
 
     
-
-    
+ 
 
     
 }
