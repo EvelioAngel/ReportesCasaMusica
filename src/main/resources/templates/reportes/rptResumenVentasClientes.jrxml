@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptListado" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="NoDataSection" columnWidth="556" leftMargin="28" rightMargin="28" topMargin="28" bottomMargin="28" whenResourceMissingType="Empty">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pAlmacen" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pFechaInicio" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pFechaFin" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+  facturacion.factura.numerofactura,
+  facturacion.factura.transportista_nombres_apellidos,
+  facturacion.cliente.descripcion as cliDescrip,
+  facturacion.subproducto.id_almacen,
+  facturacion.almacen.descripcion AS alcDescrip
+FROM
+  facturacion.factura
+  INNER JOIN facturacion.detallefactura ON (facturacion.factura.id_factura = facturacion.detallefactura.id_factura)
+  INNER JOIN facturacion.cliente ON (facturacion.cliente.codigocliente = facturacion.factura.codigocliente)
+  INNER JOIN facturacion.subproducto ON (facturacion.detallefactura.codigosubproducto = facturacion.subproducto.codigosubproducto)
+  INNER JOIN facturacion.almacen ON (facturacion.subproducto.id_almacen = facturacion.almacen.id_almacen)
+WHERE facturacion.factura.fecha BETWEEN $P{pFechaInicio} AND $P{pFechaFin} AND  facturacion.almacen.id_almacen = $P{pAlmacen} AND facturacion.factura.estado != 'C'
+GROUP BY
+  facturacion.subproducto.id_almacen,
+  facturacion.factura.numerofactura,
+  facturacion.factura.transportista_nombres_apellidos,
+  facturacion.cliente.descripcion,
+  facturacion.almacen.descripcion
+ORDER BY facturacion.factura.numerofactura]]>
+	</queryString>
+	<field name="numerofactura" class="java.lang.String"/>
+	<field name="transportista_nombres_apellidos" class="java.lang.String"/>
+	<field name="clidescrip" class="java.lang.String"/>
+	<field name="id_almacen" class="java.lang.Integer"/>
+	<field name="alcdescrip" class="java.lang.String"/>
+	<variable name="vCantidadPaginas" class="java.lang.Integer">
+		<variableExpression><![CDATA[$V{PAGE_NUMBER}]]></variableExpression>
+	</variable>
+	<group name="group">
+		<groupExpression><![CDATA[$F{id_almacen}]]></groupExpression>
+	</group>
+	<title>
+		<band height="57" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="556" height="57"/>
+				<subreportParameter name="pTitulo">
+					<subreportParameterExpression><![CDATA["Resumen de facturas por cliente y chofer"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "rptListadoTitulo.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="8" splitType="Stretch">
+			<elementGroup/>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="57" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="286" y="8" width="63" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{pFechaInicio}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="371" y="8" width="60" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{pFechaFin}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="41" width="57" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[FACTURA]]></text>
+			</staticText>
+			<line>
+				<reportElement x="4" y="56" width="574" height="1"/>
+			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="58" y="41" width="123" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[CLIENTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="360" y="41" width="90" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[CHOFER]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="225" y="6" width="61" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[PERÍODO:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="349" y="8" width="22" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[-]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="87" y="23" width="217" height="15"/>
+				<textElement verticalAlignment="Bottom"/>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{alcdescrip}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="17" y="23" width="70" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[ALMACEN :]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement x="57" y="1" width="302" height="15"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{clidescrip}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="1" width="56" height="15"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{numerofactura}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="360" y="1" width="196" height="14"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{transportista_nombres_apellidos}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="75" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Página  " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="75" y="0" width="99" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="14">
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="0" width="174" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[TOTAL FACTURAS ALMACEN:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="174" y="0" width="67" height="13"/>
+				<textElement>
+					<font fontName="Verdana" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{group_COUNT}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+	<noData>
+		<band height="30">
+			<staticText>
+				<reportElement x="116" y="4" width="324" height="14" forecolor="#FF0000"/>
+				<textElement>
+					<font fontName="Verdana" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NO EXISTEN DATOS PARA EL REPORTE O LISTADO SOLICITADO]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

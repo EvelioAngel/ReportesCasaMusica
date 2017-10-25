@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptListado" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="NoDataSection" columnWidth="556" leftMargin="28" rightMargin="28" topMargin="28" bottomMargin="28" whenResourceMissingType="Empty">
+	<property name="ireport.zoom" value="1.2100000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="codigoliente" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+     comprador."carnet_identidad" AS carnet_identidad,
+     comprador."nombres_apellidos" AS nombre
+FROM
+     "facturacion"."comprador" comprador
+WHERE comprador.codigocliente = $P{codigoliente}
+ORDER BY carnet_identidad;]]>
+	</queryString>
+	<field name="carnet_identidad" class="java.lang.String"/>
+	<field name="nombre" class="java.lang.String"/>
+	<variable name="vCantidadPaginas" class="java.lang.Integer">
+		<variableExpression><![CDATA[$V{PAGE_NUMBER}]]></variableExpression>
+	</variable>
+	<variable name="variable1" class="java.lang.String">
+		<variableExpression><![CDATA[]]></variableExpression>
+		<initialValueExpression><![CDATA[$V{variable1}]]></initialValueExpression>
+	</variable>
+	<variable name="variable2" class="java.lang.String">
+		<initialValueExpression><![CDATA["Div"]]></initialValueExpression>
+	</variable>
+	<title>
+		<band height="57" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="556" height="57"/>
+				<subreportParameter name="pTitulo">
+					<subreportParameterExpression><![CDATA["Listado de los Compradores"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "rptListadoTitulo.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="27">
+			<line>
+				<reportElement x="0" y="25" width="556" height="1"/>
+			</line>
+			<staticText>
+				<reportElement x="0" y="10" width="116" height="15"/>
+				<textElement>
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Carnet de Identidad]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="139" y="10" width="116" height="15"/>
+				<textElement>
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombres y Apellidos]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="16" splitType="Stretch">
+			<textField>
+				<reportElement x="11" y="0" width="116" height="15"/>
+				<textElement>
+					<font fontName="Verdana"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{carnet_identidad}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="139" y="0" width="237" height="15"/>
+				<textElement>
+					<font fontName="Verdana"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="309" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Página " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="311" y="0" width="245" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<noData>
+		<band height="23">
+			<staticText>
+				<reportElement x="106" y="3" width="318" height="15" forecolor="#FF0033"/>
+				<textElement textAlignment="Center">
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NO EXISTEN DATOS PARA EL REPORTE O LISTADO SOLICITADO.]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

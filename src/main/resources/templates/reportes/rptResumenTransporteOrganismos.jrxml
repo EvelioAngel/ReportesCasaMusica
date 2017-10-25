@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptResumenTransporteOrganismos" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="NoDataSection" columnWidth="556" leftMargin="28" rightMargin="28" topMargin="28" bottomMargin="28" whenResourceMissingType="Empty">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pFecha" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="ptransportista" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT	f.id_factura as idfactura,
+        f.numerofactura as factura,
+        (CASE WHEN f.moneda = 'N'
+        		THEN (SELECT destino.nombre FROM distribucion.dist_unidad destino WHERE destino.id_unidad = CAST (f.id_destino_dist AS NUMERIC))
+                ELSE (SELECT tnd.descripcion FROM facturacion.tienda tnd WHERE tnd.codigotienda = f.id_destino_dist)
+        	END) AS entregaa,
+        c.descripcion AS descripcioncliente,
+        t.nombres_apellidos as nombre,
+        t.chapa as chapa,
+        round(cast((sum(df.cantidad)/1000) as numeric),2) AS cantidad,
+        sum(df.piezas) AS piezas
+  FROM facturacion.factura f
+  	INNER JOIN facturacion.detallefactura df ON df.id_factura = f.id_factura
+    	AND f.estado <> 'C' AND f.fecha = $P{pFecha}
+  	INNER JOIN facturacion.cliente c ON c.codigocliente = f.codigocliente
+    INNER JOIN facturacion.transportista t ON t.carnet_identidad = f.transportistacarnet_identidad
+    	AND t.tipo = 'E' AND t.carnet_identidad = $P{ptransportista}
+GROUP BY idfactura,factura,entregaa,descripcioncliente,nombre,chapa]]>
+	</queryString>
+	<field name="idfactura" class="java.lang.Integer"/>
+	<field name="factura" class="java.lang.String"/>
+	<field name="entregaa" class="java.lang.String"/>
+	<field name="descripcioncliente" class="java.lang.String"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="chapa" class="java.lang.String"/>
+	<field name="cantidad" class="java.math.BigDecimal"/>
+	<field name="piezas" class="java.math.BigDecimal"/>
+	<variable name="vCantidadPaginas" class="java.lang.Integer">
+		<variableExpression><![CDATA[$V{PAGE_NUMBER}]]></variableExpression>
+	</variable>
+	<variable name="CantidadTotal" class="java.lang.Float" calculation="Sum">
+		<variableExpression><![CDATA[$F{cantidad}]]></variableExpression>
+	</variable>
+	<variable name="CantidadPiezas" class="java.lang.Float" calculation="Sum">
+		<variableExpression><![CDATA[$F{piezas}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="41" splitType="Stretch">
+			<subreport>
+				<reportElement x="0" y="0" width="578" height="40"/>
+				<subreportParameter name="pTitulo">
+					<subreportParameterExpression><![CDATA["Resumen Transportista/Carga"]]></subreportParameterExpression>
+				</subreportParameter>
+				<connectionExpression><![CDATA[$P{REPORT_CONNECTION}]]></connectionExpression>
+				<subreportExpression class="java.lang.String"><![CDATA[$P{SUBREPORT_DIR} + "rptListadoTitulo.jasper"]]></subreportExpression>
+			</subreport>
+		</band>
+	</title>
+	<columnHeader>
+		<band height="49" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="479" y="2" width="63" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="9" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression class="java.util.Date"><![CDATA[$P{pFecha}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="2" y="34" width="70" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="9" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Factura]]></text>
+			</staticText>
+			<line>
+				<reportElement x="4" y="48" width="552" height="1"/>
+			</line>
+			<staticText>
+				<reportElement mode="Transparent" x="72" y="34" width="268" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="9" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Cliente]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="436" y="34" width="54" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="9" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Bultos]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="491" y="34" width="65" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="9" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Cantidad(T)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="394" y="1" width="85" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="9" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Fecha del viaje:]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="340" y="34" width="95" height="14" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="9" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Entrega a]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="2" y="0" width="76" height="15" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="9" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Transportista:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="0" width="310" height="14"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="2" y="16" width="76" height="11" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="9" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[Chapa:]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="80" y="16" width="80" height="11"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{chapa}]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="28" splitType="Stretch">
+			<textField>
+				<reportElement x="73" y="2" width="271" height="26"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{descripcioncliente}]]></textFieldExpression>
+			</textField>
+			<textField pattern=" " isBlankWhenNull="true">
+				<reportElement x="340" y="2" width="93" height="15"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{entregaa}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="436" y="2" width="54" height="15"/>
+				<textElement textAlignment="Right">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{piezas}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="3" y="2" width="69" height="15"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{factura}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00;-###0.00">
+				<reportElement x="491" y="2" width="65" height="15"/>
+				<textElement textAlignment="Right">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="75" height="20"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.String"><![CDATA["Página  " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="75" y="0" width="99" height="20"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="20">
+			<staticText>
+				<reportElement mode="Transparent" x="162" y="0" width="142" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<text><![CDATA[T O T A L    G E N E R A L]]></text>
+			</staticText>
+			<textField pattern="####0.00">
+				<reportElement x="492" y="0" width="65" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$V{CantidadTotal}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="false">
+				<reportElement x="437" y="0" width="54" height="13"/>
+				<textElement textAlignment="Right">
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$V{CantidadPiezas}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+	<noData>
+		<band height="30">
+			<staticText>
+				<reportElement x="116" y="4" width="324" height="20" forecolor="#FF0000"/>
+				<textElement>
+					<font fontName="Verdana" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NO EXISTEN DATOS PARA EL REPORTE O LISTADO SOLICITADO]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

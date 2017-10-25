@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptDetalleFactura" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="AllSectionsNoDetail" columnWidth="612" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0">
+	<property name="ireport.zoom" value="1.2396694214876032"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="id_factura" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[1]]></defaultValueExpression>
+	</parameter>
+	<queryString>
+		<![CDATA[SELECT
+     detallefactura."codigosubproducto" AS codigosubproducto,
+     detallefactura.codigoproducto_cl AS codprodcliente,
+     detallefactura."cantidad" AS cantidad,
+     detallefactura."precio" - detallefactura."descuento" AS precio,
+     detallefactura.piezas AS piezas,
+     detallefactura."preciocuc" AS preciocuc,
+     detallefactura."descuento" AS descuento,
+     producto."codigoproducto" AS codigo_producto,
+     producto."descripcion" AS descripcion,
+     producto."codigoum" AS um,
+     round(detallefactura.cantidad*(detallefactura.precio -detallefactura.descuento),6) AS importecup,
+     round(detallefactura.cantidad*detallefactura.preciocuc,6) AS importecuc,
+
+     (CASE WHEN subproducto.codigosubproducto = '1321010002' THEN 0
+      ELSE
+         (CASE WHEN subproducto.unoporciento = 'FALSE' THEN 0
+         ELSE
+         round(((round(detallefactura.cantidad*(detallefactura.precio -detallefactura.descuento),6) +
+              round(detallefactura.cantidad*detallefactura.preciocuc,6))*0.01),6)
+         END)
+      END) AS importe1porciento,
+
+     (CASE WHEN (subproducto.codigosubproducto = '1321010002' OR subproducto.derivadocerdo = TRUE) THEN 0
+      ELSE
+         (CASE WHEN subproducto.dosporciento = 'FALSE' THEN 0
+         ELSE
+            round(((round(detallefactura.cantidad*(detallefactura.precio -detallefactura.descuento),6) +
+              round(detallefactura.cantidad*detallefactura.preciocuc,2))*0.02),6)
+         END)
+      END) AS importe2porciento
+
+FROM
+     facturacion.producto producto
+     INNER JOIN facturacion.subproducto subproducto ON producto.codigoproducto = subproducto.codigoproducto
+     INNER JOIN facturacion.detallefactura detallefactura ON subproducto.codigosubproducto = detallefactura.codigosubproducto
+where detallefactura.id_factura = $P{id_factura}]]>
+	</queryString>
+	<field name="codigosubproducto" class="java.lang.String"/>
+	<field name="codprodcliente" class="java.lang.String"/>
+	<field name="cantidad" class="java.math.BigDecimal"/>
+	<field name="precio" class="java.math.BigDecimal"/>
+	<field name="piezas" class="java.math.BigDecimal"/>
+	<field name="preciocuc" class="java.math.BigDecimal"/>
+	<field name="descuento" class="java.math.BigDecimal"/>
+	<field name="codigo_producto" class="java.lang.String"/>
+	<field name="descripcion" class="java.lang.String"/>
+	<field name="um" class="java.lang.String"/>
+	<field name="importecup" class="java.math.BigDecimal"/>
+	<field name="importecuc" class="java.math.BigDecimal"/>
+	<field name="importe1porciento" class="java.math.BigDecimal"/>
+	<field name="importe2porciento" class="java.math.BigDecimal"/>
+	<variable name="sumImporteCUP" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{importecup}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Float(0.00)]]></initialValueExpression>
+	</variable>
+	<variable name="sumImporteCUC" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{importecuc}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Float(0.00)]]></initialValueExpression>
+	</variable>
+	<variable name="sumImporte1porciento" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe1porciento}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Float(0.00)]]></initialValueExpression>
+	</variable>
+	<variable name="sumImporte2porciento" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe2porciento}]]></variableExpression>
+		<initialValueExpression><![CDATA[new Float(0.00)]]></initialValueExpression>
+	</variable>
+	<detail>
+		<band height="11" splitType="Stretch">
+			<textField isBlankWhenNull="true">
+				<reportElement x="68" y="0" width="188" height="11" isPrintWhenDetailOverflows="true"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{descripcion}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="true">
+				<reportElement x="308" y="0" width="30" height="11"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{um}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.000000" isBlankWhenNull="true">
+				<reportElement x="339" y="0" width="40" height="11"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{cantidad}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00000" isBlankWhenNull="true">
+				<reportElement x="380" y="0" width="45" height="11"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{precio}]]></textFieldExpression>
+			</textField>
+			<textField pattern="##0.00000" isBlankWhenNull="true">
+				<reportElement x="425" y="0" width="48" height="11"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{preciocuc}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement x="472" y="0" width="49" height="11"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{importecup}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement x="521" y="0" width="49" height="11"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$F{importecuc}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="0" width="62" height="11"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{codigo_producto}]]></textFieldExpression>
+			</textField>
+			<textField pattern="###0.00" isBlankWhenNull="true">
+				<reportElement x="262" y="0" width="45" height="11"/>
+				<textElement textAlignment="Right" verticalAlignment="Top">
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{piezas}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+</jasperReport>

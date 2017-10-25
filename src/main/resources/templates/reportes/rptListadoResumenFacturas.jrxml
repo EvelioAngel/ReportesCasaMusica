@@ -1,0 +1,497 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="rptListado" language="groovy" pageWidth="612" pageHeight="792" whenNoDataType="NoDataSection" columnWidth="556" leftMargin="28" rightMargin="28" topMargin="28" bottomMargin="28" whenResourceMissingType="Empty">
+	<property name="ireport.zoom" value="1.2100000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="SUBREPORT_DIR" class="java.lang.String" isForPrompting="false">
+		<defaultValueExpression><![CDATA["/home/martin/Desktop/reportes/salvas (current)/"]]></defaultValueExpression>
+	</parameter>
+	<parameter name="pEstablec" class="java.lang.String"/>
+	<parameter name="pMes" class="java.lang.Integer"/>
+	<parameter name="pAnno" class="java.lang.Integer"/>
+	<parameter name="p_fecha_factura" class="java.util.Date"/>
+	<parameter name="p_fecha_factura_hasta" class="java.util.Date"/>
+	<queryString>
+		<![CDATA[select codigoproducto, producto, numerofactura,
+    (select e.descripcion from facturacion.establecimiento e limit 1) as establecimiento,
+    cliente, datos.precio,
+    sum(datos.cantidad) as cantidad,
+    sum(datos.importe) as importe,
+    datos.subsidio
+from (
+
+with base as (
+	select f.id_factura, f.numerofactura,
+      f.codigocliente, cli.alias as cliente
+    from facturacion.factura f
+    inner join distribucion.cliente cli
+    on cli.codigocliente = f.codigocliente
+    and f.fecha BETWEEN  $P{p_fecha_factura} and $P{p_fecha_factura_hasta}
+    and f.estado <> 'C'
+)
+
+select p.codigoproducto, p.descripcion as producto,
+	base.numerofactura,
+    base.cliente, df.cantidad, df.precio,  (df.cantidad * sp.subsidio) as importe, sp.subsidio
+from base
+inner join facturacion.detallefactura df on
+df.id_factura = base.id_factura
+
+inner join facturacion.subproducto sp
+on sp.codigosubproducto = df.codigosubproducto and sp.subsidio > 0
+
+inner join facturacion.producto p
+on p.codigoproducto = sp.codigoproducto
+
+) datos
+
+group by codigoproducto, producto,
+ numerofactura, cliente, datos.precio, datos.subsidio
+having sum(datos.cantidad) > 0
+
+order by producto, numerofactura]]>
+	</queryString>
+	<field name="codigoproducto" class="java.lang.String"/>
+	<field name="producto" class="java.lang.String"/>
+	<field name="numerofactura" class="java.lang.String"/>
+	<field name="establecimiento" class="java.lang.String"/>
+	<field name="cliente" class="java.lang.String"/>
+	<field name="precio" class="java.math.BigDecimal"/>
+	<field name="cantidad" class="java.math.BigDecimal"/>
+	<field name="importe" class="java.math.BigDecimal"/>
+	<field name="subsidio" class="java.math.BigDecimal"/>
+	<variable name="total" class="java.math.BigDecimal" calculation="Sum">
+		<variableExpression><![CDATA[$F{importe}]]></variableExpression>
+	</variable>
+	<variable name="vCantidadPaginas" class="java.lang.Integer">
+		<variableExpression><![CDATA[$V{PAGE_NUMBER}]]></variableExpression>
+	</variable>
+	<title>
+		<band height="97" splitType="Stretch">
+			<rectangle>
+				<reportElement x="275" y="32" width="204" height="28"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="479" y="0" width="77" height="32"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="3" y="0" width="476" height="32"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="3" y="32" width="150" height="28"/>
+			</rectangle>
+			<elementGroup/>
+			<staticText>
+				<reportElement x="166" y="1" width="197" height="13"/>
+				<textElement>
+					<font fontName="Verdana"/>
+				</textElement>
+				<text><![CDATA[Ministerio de la Industria Alimentaria]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="153" y="19" width="252" height="13"/>
+				<textElement>
+					<font fontName="Verdana"/>
+				</textElement>
+				<text><![CDATA[Grupo Empresarial de la Industria Alimentaria]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="490" y="9" width="55" height="17"/>
+				<textElement>
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FPTC - 07]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="8" y="36" width="139" height="22"/>
+				<textElement>
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RESUMEN DE FACTURAS]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="153" y="32" width="122" height="28"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="280" y="37" width="194" height="15"/>
+				<textElement textAlignment="Justified">
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Subsidio Por Diferencia de Precios]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="479" y="32" width="77" height="28"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="3" y="60" width="476" height="17"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="212" y="62" width="58" height="15"/>
+				<textElement>
+					<font fontName="Verdana"/>
+				</textElement>
+				<text><![CDATA[EMPRESA]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="3" y="77" width="102" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="479" y="60" width="77" height="37"/>
+			</rectangle>
+			<textField>
+				<reportElement x="512" y="70" width="14" height="15"/>
+				<textElement>
+					<font fontName="Verdana"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[1]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="105" y="77" width="269" height="20"/>
+			</rectangle>
+			<textField>
+				<reportElement x="107" y="81" width="258" height="16"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Nombre: " + $F{establecimiento}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="371" y="77" width="108" height="20"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="374" y="81" width="100" height="16"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<text><![CDATA[Provincia: Holguín]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="156" y="37" width="114" height="20"/>
+				<textElement>
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Mes: " + "Diciembre"]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="481" y="34" width="74" height="26"/>
+				<textElement>
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Solicitud que ampara]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band splitType="Stretch">
+			<elementGroup/>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="53" splitType="Stretch">
+			<rectangle>
+				<reportElement x="3" y="0" width="102" height="32"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="6" y="12" width="99" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="Verdana" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nro. de la factura]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="371" y="0" width="185" height="32"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="105" y="0" width="175" height="32"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="109" y="11" width="140" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="Verdana"/>
+				</textElement>
+				<text><![CDATA[Breve descripción]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="280" y="0" width="91" height="32"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="290" y="11" width="59" height="20"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="Verdana"/>
+				</textElement>
+				<text><![CDATA[Importe]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="373" y="11" width="177" height="19"/>
+				<textElement textAlignment="Center" verticalAlignment="Top">
+					<font fontName="Verdana"/>
+				</textElement>
+				<text><![CDATA[Comprador]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="3" y="31" width="102" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="105" y="31" width="175" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="280" y="31" width="91" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="371" y="31" width="185" height="20"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="40" y="32" width="43" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Verdana"/>
+				</textElement>
+				<text><![CDATA[(1)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="179" y="32" width="20" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Verdana"/>
+				</textElement>
+				<text><![CDATA[(2)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="312" y="31" width="59" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Verdana"/>
+				</textElement>
+				<text><![CDATA[(3)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="445" y="32" width="26" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Verdana"/>
+				</textElement>
+				<text><![CDATA[(4)]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="17">
+			<rectangle>
+				<reportElement x="105" y="-3" width="175" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="280" y="-3" width="91" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="371" y="-3" width="185" height="20"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="3" y="-3" width="102" height="20"/>
+			</rectangle>
+			<textField pattern="dd/MM/yy" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="6" y="1" width="77" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Bottom" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{numerofactura}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="108" y="1" width="167" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{producto}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="374" y="1" width="179" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement verticalAlignment="Top" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{cliente}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00" isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="283" y="1" width="80" height="13" forecolor="#000000" backcolor="#FFFFFF"/>
+				<textElement textAlignment="Right" verticalAlignment="Top" rotation="None" markup="none">
+					<font fontName="Verdana" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="Single"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Float"><![CDATA[$F{importe}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band/>
+	</columnFooter>
+	<pageFooter>
+		<band height="33" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="309" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Verdana"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Página " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="311" y="0" width="245" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Verdana"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<lastPageFooter>
+		<band height="153">
+			<textField>
+				<reportElement x="3" y="132" width="309" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Verdana"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA["Página " + $V{PAGE_NUMBER} + " de "]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="314" y="132" width="242" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Verdana"/>
+				</textElement>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="0" y="0" width="280" height="67"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="280" height="67"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<text><![CDATA[Certificamos que los datos que se reflejan en la solicitud de financiamiento coinciden con lo registrado en nuestros controles contables y financieros y las facturas cumplen con las exigencias establecidas en la instrucción 15/06 del MFP, y los precios mayoristas y minoristas son los vigentes en la fecha de las operaciones presentadas
+]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="280" y="0" width="276" height="17"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="284" y="2" width="100" height="15"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<text><![CDATA[Propuesto por:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="280" y="17" width="276" height="17"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="285" y="19" width="100" height="15"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<text><![CDATA[Aprobado por:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="280" y="34" width="276" height="33"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="285" y="37" width="100" height="20"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<text><![CDATA[Fecha y Cuño:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="67" width="556" height="20"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="137" y="68" width="375" height="19"/>
+				<textElement/>
+				<text><![CDATA[PARA USO DEL GRUPO EMPRESARIAL DE LA INDUSTRIA ALIMENTARIA]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="87" width="280" height="27"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="3" y="89" width="100" height="15"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<text><![CDATA[Recibido por:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="280" y="87" width="199" height="27"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="283" y="89" width="79" height="15"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<text><![CDATA[Revisado por:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="479" y="87" width="77" height="27"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="481" y="89" width="75" height="25"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<text><![CDATA[Registro de entrada No:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="0" y="114" width="280" height="16"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="3" y="116" width="100" height="15"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="280" y="114" width="199" height="16"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="283" y="116" width="100" height="15"/>
+				<textElement>
+					<font fontName="Verdana" size="9"/>
+				</textElement>
+				<text><![CDATA[Fecha:]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement x="479" y="114" width="77" height="16"/>
+			</rectangle>
+		</band>
+	</lastPageFooter>
+	<summary>
+		<band height="20">
+			<rectangle>
+				<reportElement x="280" y="0" width="276" height="20"/>
+			</rectangle>
+			<textField pattern="###0.00">
+				<reportElement x="282" y="0" width="80" height="20"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<textFieldExpression class="java.math.BigDecimal"><![CDATA[$V{total}]]></textFieldExpression>
+			</textField>
+			<rectangle>
+				<reportElement x="3" y="0" width="277" height="20"/>
+			</rectangle>
+			<staticText>
+				<reportElement x="170" y="0" width="100" height="20"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Verdana" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL GENERAL]]></text>
+			</staticText>
+		</band>
+	</summary>
+	<noData>
+		<band height="50">
+			<staticText>
+				<reportElement x="100" y="10" width="362" height="20" forecolor="#FF0000"/>
+				<textElement>
+					<font fontName="Verdana" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NO EXISTEN DATOS PARA EL REPORTE O LISTADO SOLICITADO]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>

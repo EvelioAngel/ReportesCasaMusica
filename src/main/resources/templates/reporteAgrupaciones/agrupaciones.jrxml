@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="595" pageHeight="842" whenNoDataType="NoDataSection" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" isFloatColumnFooter="true" uuid="72783378-7877-4fd5-9962-73f6b367cce3">
+	<property name="ireport.zoom" value="1.4641000000000006"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="mes" class="java.lang.Integer"/>
+	<parameter name="anno" class="java.lang.Integer"/>
+	<queryString>
+		<![CDATA[select sum(nomA.salario_bruto) as salario_bruto, sum(nomA.onat) as onat, nomA.codartista, nomA.codunidadartistica, art.nombrecompleto, art.ci, unidA.nombre
+from nomina_artista nomA
+join unidad_artistica unidA on unidA.id_unidad_artistica = nomA.iduniartistica
+join artista art on art.id_artista = nomA.idartista
+join nomina nom on nom.id_nomina = nomA.id_nomina and  extract(year from nom.fecha) = $P{anno} and  extract(month from nom.fecha) = $P{mes}
+group by nomA.codunidadartistica, unidA.nombre, art.ci, nomA.codartista, art.nombrecompleto
+order by unidA.nombre]]>
+	</queryString>
+	<field name="salario_bruto" class="java.math.BigDecimal"/>
+	<field name="onat" class="java.math.BigDecimal"/>
+	<field name="codartista" class="java.lang.String"/>
+	<field name="codunidadartistica" class="java.lang.String"/>
+	<field name="nombrecompleto" class="java.lang.String"/>
+	<field name="ci" class="java.lang.String"/>
+	<field name="nombre" class="java.lang.String"/>
+	<variable name="totalSalario" class="java.math.BigDecimal" resetType="Group" resetGroup="grUnidad" calculation="Sum">
+		<variableExpression><![CDATA[$F{salario_bruto}]]></variableExpression>
+	</variable>
+	<variable name="totalRet" class="java.math.BigDecimal" resetType="Group" resetGroup="grUnidad" calculation="Sum">
+		<variableExpression><![CDATA[$F{onat}]]></variableExpression>
+	</variable>
+	<group name="grUnidad">
+		<groupExpression><![CDATA[$F{nombre}]]></groupExpression>
+		<groupHeader>
+			<band height="50">
+				<textField>
+					<reportElement x="0" y="0" width="396" height="20" uuid="6eba9318-92f7-4549-8c75-2470d60787d5"/>
+					<textElement>
+						<font size="12" isBold="true" isUnderline="true" isStrikeThrough="false"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="0" y="30" width="40" height="20" uuid="aae6a0ae-1c29-49ca-8c79-00f5b6f7211f"/>
+					<textElement>
+						<font isBold="true" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[Código]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="67" y="30" width="100" height="20" uuid="8ce6da56-ca59-417d-ae5d-1a3a40363e86"/>
+					<textElement>
+						<font isBold="true" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[Nombre y Apellidos]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="261" y="30" width="100" height="20" uuid="34ca67c7-9c14-4a82-a7a5-614898a21bf9"/>
+					<textElement>
+						<font isBold="true" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[C. Identidad]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="422" y="30" width="36" height="20" uuid="15a30699-b6e9-4b50-9165-13edc3a8aa48"/>
+					<textElement>
+						<font isBold="true" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[Salario]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="492" y="30" width="53" height="20" uuid="1ae16ee3-d722-4155-83f8-782ad20a5583"/>
+					<textElement>
+						<font isBold="true" isUnderline="true"/>
+					</textElement>
+					<text><![CDATA[Aporte 5%]]></text>
+				</staticText>
+			</band>
+		</groupHeader>
+		<groupFooter>
+			<band height="50">
+				<textField>
+					<reportElement x="476" y="11" width="69" height="20" uuid="b252c38e-f8f2-4ddd-873a-939d7f9188d7"/>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalRet}]]></textFieldExpression>
+				</textField>
+				<textField pattern="">
+					<reportElement x="374" y="11" width="85" height="20" uuid="7a4ea258-cf35-40ea-b671-8771a62b00c5"/>
+					<textElement textAlignment="Right">
+						<font isBold="true"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$V{totalSalario}]]></textFieldExpression>
+				</textField>
+				<staticText>
+					<reportElement x="405" y="0" width="70" height="20" uuid="acec5223-19ad-4883-a582-d48f4f65284c"/>
+					<text><![CDATA[__________]]></text>
+				</staticText>
+				<staticText>
+					<reportElement x="492" y="0" width="70" height="20" uuid="89af192b-e16d-49ce-a4c3-d21285ba4fb1"/>
+					<text><![CDATA[__________]]></text>
+				</staticText>
+			</band>
+		</groupFooter>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="41" splitType="Stretch">
+			<staticText>
+				<reportElement x="133" y="0" width="353" height="20" uuid="57290867-c4e2-45e5-b072-fd5445db0f13"/>
+				<textElement>
+					<font size="13" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Empresa Provincial Comerc. de la Música y Espect.]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="28" splitType="Stretch">
+			<textField pattern="MMMMM yyyy">
+				<reportElement x="417" y="0" width="64" height="20" uuid="5f5dcd1d-3769-4235-bd9c-11430235c422"/>
+				<textFieldExpression><![CDATA[new Date($P{anno}-1900,$P{mes}-1,1)]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<detail>
+		<band height="22" splitType="Stretch">
+			<textField>
+				<reportElement x="0" y="0" width="67" height="20" uuid="58692bba-bd0c-41fa-ae3a-e8f9ab69da9c"/>
+				<textFieldExpression><![CDATA[$F{codartista}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="67" y="0" width="194" height="20" uuid="46b6e4a5-3166-4360-bde4-42ea318582ed"/>
+				<textFieldExpression><![CDATA[$F{nombrecompleto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="261" y="0" width="100" height="20" uuid="c174fa4a-14e3-4049-8961-3293abcb3cf1"/>
+				<textFieldExpression><![CDATA[$F{ci}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="373" y="0" width="85" height="20" uuid="a33a424e-f535-4ca7-91e8-23da8404308f"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{salario_bruto}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="475" y="0" width="69" height="20" uuid="41fd04a3-2833-437b-8096-a372a2e6b1b7"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA[$F{onat}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="56" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+	<noData>
+		<band height="50">
+			<staticText>
+				<reportElement x="178" y="10" width="314" height="20" uuid="a2db0f0a-305b-4502-a870-71b88324ece8"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<text><![CDATA[No hay Resultado para este Reporte]]></text>
+			</staticText>
+		</band>
+	</noData>
+</jasperReport>
