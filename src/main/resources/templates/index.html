@@ -14,7 +14,7 @@ and open the template in the editor.
 
         <div class="container">
             <div class="row">
-                <div class="col-sm-2 col-sm-offset-1">
+                <div class="col-md-2 col-sm-3 col-sm-offset-1">
                     <div class="thumbnail">
                         <img th:src="@{images/icono.png}" alt=""/>
                         <div class="caption">
@@ -22,7 +22,7 @@ and open the template in the editor.
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-md-2 col-sm-3">
                     <div class="thumbnail">
                         <img th:src="@{images/icono.png}" alt=""/>
                         <div class="caption">
@@ -30,7 +30,7 @@ and open the template in the editor.
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-2">
+                <div class="col-md-2 col-sm-3">
                     <div class="thumbnail">
                         <img th:src="@{images/icono.png}" alt=""/>
                         <div class="caption">
@@ -51,37 +51,28 @@ and open the template in the editor.
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form th:action="@{/agrupaciones/pdf}" method="get">
+                    <form th:action="@{/agrupaciones/pdf}" method="get" target="_blank">                              
                         <div class="modal-body">
-
                             <div class="form-inline">
                                 <label for="mes">Mes:</label>
-                                <select id="mes" name="mes" class="form-control">
-                                    <option value="01">Enero</option>
-                                    <option value="02">Febrero</option>
-                                    <option value="03">Marzo</option>
-                                    <option value="04">Abril</option>
-                                    <option value="05">Mayo</option>
-                                    <option value="06">Junio</option>
-                                    <option value="07">Julio</option>
-                                    <option value="08">Agosto</option>
-                                    <option value="09">Septiembre</option>
-                                    <option value="10">Octubre</option>
-                                    <option value="11">Noviembre</option>
-                                    <option value="12">Diciembre</option>
+                                <select id="mes" name="mes" class="form-control" >
+                                    <option value="01" th:selected="${mes == 'enero'}">Enero</option>
+                                    <option value="02" th:selected="${mes == 'febrero'}">Febrero</option>
+                                    <option value="03" th:selected="${mes == 'marzo'}">Marzo</option>
+                                    <option value="04" th:selected="${mes == 'abril'}">Abril</option>
+                                    <option value="05" th:selected="${mes == 'mayo'}">Mayo</option>
+                                    <option value="06" th:selected="${mes == 'junio'}">Junio</option>
+                                    <option value="07" th:selected="${mes == 'julio'}">Julio</option>
+                                    <option value="08" th:selected="${mes == 'agosto'}">Agosto</option>
+                                    <option value="09" th:selected="${mes == 'septiembre'}">Septiembre</option>
+                                    <option value="10" th:selected="${mes == 'octubre'}">Octubre</option>
+                                    <option value="11" th:selected="${mes == 'noviembre'}">Noviembre</option>
+                                    <option value="12" th:selected="${mes == 'diciembre'}">Diciembre</option>
                                 </select>
 
                                 <label for="anno">Año:</label>
-                                <select name="anno" id="anno" class="form-control">
-                                    <option value="2016">2016</option>
-                                    <option value="2017">2017</option>
-                                    <option value="2018">2018</option>
-                                    <option value="2019">2019</option>
-                                    <option value="2020">2020</option>
-                                    <option value="2021">2021</option>
-                                    <option value="2022">2022</option>
-                                    <option value="2023">2023</option>                                    
-                                </select>
+                                <input type="number" name="anno" id="anno" class="form-control" th:value="${anno}"/>                                                                        
+
                             </div>
 
                         </div>
@@ -93,15 +84,21 @@ and open the template in the editor.
                 </div>
             </div>
         </div>
-        
-        <script>
-            $("#ver").on("click",function(){
-                var location = "http://localhost:8086/agrupaciones/pdf?mes=";
+
+        <script th:inline="javascript">
+            $("#ver").on("click", function () {
+                var location = "/agrupaciones/pdf?mes=";
                 location += $('#mes').val();
-                location += "&anno="+$('#anno').val();
-                window.open(location,'_blank');
-                
+                location += "&anno=" + $('#anno').val();
+                window.open(location, '_blank');
             });
+
+            /*<![CDATA[*/
+            var mes = [[${mes}]];
+            $("#mes").val(mes);
+                    
+            /*]]>*/
+
         </script>    
     </body>
 </html>

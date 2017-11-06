@@ -52,7 +52,14 @@ public class ReporteOnatController {
     ArtistaService serviceArtista;
 
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String index() {
+    public String index(Model model) {
+        
+        SimpleDateFormat formateador = new SimpleDateFormat("MM");
+        String mes = formateador.format(new Date());
+        formateador = new SimpleDateFormat("yyyy");
+        String anno = formateador.format(new Date());        
+        model.addAttribute("mes", mes);
+        model.addAttribute("anno", anno);
         return "index";
     }
     
